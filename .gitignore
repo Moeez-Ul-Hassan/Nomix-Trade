@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# System files
+.DS_Store
+
+# Environment variables (for security later)
+.env
