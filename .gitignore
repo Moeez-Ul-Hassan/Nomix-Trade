@@ -1,12 +1,29 @@
-# Dependencies
+# --- JavaScript / React (Frontend) ---
 node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Python / FastAPI (Backend) ---
 venv/
 env/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
 
-# System files
+# --- Database ---
+*.sqlite3
+*.db
+
+# --- System Files ---
 .DS_Store
+Thumbs.db
 
-# Environment variables (for security later)
+# --- Environment Variables (CRITICAL: Never share passwords) ---
 .env
