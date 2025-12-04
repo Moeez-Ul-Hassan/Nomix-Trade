@@ -1,0 +1,231 @@
+/* src/pages/ForecastMain.css */
+
+:root {
+  --bg-dark: #050816;
+  --bg-card: #0f1221; 
+  --text-primary: #ffffff;
+  --text-secondary: #8b9bb4;
+  --accent-green: #4CAF50;
+  --accent-red: #ff4d4d;
+  --accent-gold: #FFD700;
+  --border-color: rgba(255, 255, 255, 0.08);
+  /* --- ADDED GRID LINE VARIABLE --- */
+  --grid-line: rgba(255, 255, 255, 0.05);
+}
+
+.forecast-container {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding-bottom: 50px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  /* --- ADDED BACKGROUND GRID PATTERN --- */
+  background-image: 
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  /* ------------------------------------ */
+}
+
+/* --- HEADER SECTION --- */
+.market-header {
+  padding: 40px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.date-badge {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(5px); /* Added blur for better visibility over grid */
+}
+
+/* --- MAIN GRID LAYOUT --- */
+.forecast-content {
+  display: grid;
+  grid-template-columns: 3fr 1fr; /* 75% Table, 25% Sidebar */
+  gap: 30px;
+  padding: 0 5%;
+}
+
+/* --- MAIN CARD (TABLE) --- */
+.main-card {
+  background-color: var(--bg-card); /* Keep solid background to read text over grid */
+  border-radius: 16px;
+  padding: 25px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Dropdown Styling */
+.period-select {
+  background: #1a1d2e;
+  color: white;
+  border: 1px solid var(--border-color);
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* --- TABLE STYLING --- */
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-table th {
+  text-align: left;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stock-table td {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.stock-symbol {
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.company-name-sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.price-up { color: var(--accent-green); }
+.price-down { color: var(--accent-red); }
+
+/* Prediction Column */
+.pred-value {
+  font-weight: 700;
+}
+
+/* Heart Icon */
+.fav-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+
+.fav-btn:hover, .fav-btn.active {
+  color: var(--accent-red);
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.side-card {
+  background-color: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+/* Fake Radar Chart Circle */
+.radar-placeholder {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px dashed var(--border-color);
+  margin: 20px auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radar-inner {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  border: 2px solid var(--accent-gold);
+  animation: morph 4s infinite;
+}
+
+@keyframes morph {
+  0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+  50% { border-radius: 60% 40% 30% 70% / 60% 50% 40% 50%; }
+  100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+}
+
+/* Top Performers Mini Table */
+.mini-table {
+  width: 100%;
+  margin-top: 15px;
+  font-size: 0.85rem;
+}
+
+.mini-table td {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* --- FOOTER (Small specific tweaks if needed) --- */
+.main-footer {
+  margin-top: 50px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .forecast-content {
+    grid-template-columns: 1fr; /* Stack sidebar below table */
+  }
+}
+
+@media (max-width: 768px) {
+  .stock-table th:nth-child(3), /* Hide Open */
+  .stock-table td:nth-child(3),
+  .stock-table th:nth-child(4), /* Hide High */
+  .stock-table td:nth-child(4),
+  .stock-table th:nth-child(5), /* Hide Low */
+  .stock-table td:nth-child(5) {
+    display: none; /* Hide columns on very small screens to fit */
+  }
+}

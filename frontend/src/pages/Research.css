@@ -1,0 +1,212 @@
+/* src/pages/Research.css */
+
+:root {
+  --bg-dark: #0b0c15;
+  --bg-card: #16171d;
+  --accent-green: #4CAF50;
+  --accent-blue: #2196F3;
+  --text-gold: #FFD700;
+  --grid-line: rgba(255, 255, 255, 0.05);
+}
+
+.research-container {
+  background-color: var(--bg-dark);
+  color: white;
+  overflow-x: hidden;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+}
+
+/* --- REUSING ANIMATION LOGIC FROM LANDING PAGE --- */
+.background-animation {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100vh;
+  z-index: 0;
+  background-image: 
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.candle-scroll {
+  position: absolute;
+  top: 50%; left: 0; width: 200%; height: 100%;
+  background-image: 
+    linear-gradient(rgba(76, 175, 80, 0.1) 1px, transparent 1px), 
+    linear-gradient(90deg, rgba(76, 175, 80, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.3;
+  transform: translateY(-50%) perspective(500px) rotateX(20deg);
+  animation: scrollBackground 30s linear infinite;
+}
+
+@keyframes scrollBackground {
+  from { transform: translateY(-50%) perspective(500px) rotateX(20deg) translateX(0); }
+  to { transform: translateY(-50%) perspective(500px) rotateX(20deg) translateX(-50%); }
+}
+
+/* --- HERO SECTION --- */
+.hero-section.research-hero {
+  height: 60vh; /* Shorter hero for sub-page */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden; 
+  padding: 0 20px;
+}
+
+.video-background {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+}
+.video-background video {
+  width: 100%; height: 100%; object-fit: cover; opacity: 0.6;
+}
+.video-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+  background: radial-gradient(circle at center, rgba(11,12,21,0.5) 0%, var(--bg-dark) 100%);
+}
+.hero-content {
+  position: relative; z-index: 2; max-width: 800px;
+}
+.hero-title {
+  font-size: 4rem; font-weight: 800; margin-bottom: 20px; color: white;
+  text-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
+.hero-slogan {
+  font-size: 1.2rem; color: #e0e0e0;
+}
+
+/* --- SECTIONS --- */
+.section-block {
+  position: relative; padding: 80px 20px; z-index: 1; max-width: 1200px; margin: 0 auto;
+}
+.section-title { font-size: 2.5rem; margin-bottom: 20px; color: white; font-weight: 700; }
+.section-subtitle { color: var(--accent-green); text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: block; margin-bottom: 10px; }
+.text-content { font-size: 1.1rem; color: #ccc; line-height: 1.7; margin-bottom: 20px; }
+
+/* Split Layout */
+.split-section { display: flex; align-items: center; gap: 50px; }
+.split-section.reverse { flex-direction: row-reverse; }
+.split-image-container { flex: 1; height: 350px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+.split-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+.split-image-container:hover .split-image { transform: scale(1.05); }
+.split-content { flex: 1; }
+
+/* --- TEAM GRID --- */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.team-card {
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.team-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--accent-green);
+}
+
+.team-img-wrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #2a2a2a;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accent-green);
+  overflow: hidden;
+}
+
+.default-avatar {
+  font-size: 3rem;
+  color: #666;
+}
+
+.team-name {
+  color: white;
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+}
+
+.team-role {
+  color: var(--text-gold);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.team-socials {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.team-socials a {
+  color: #888;
+  font-size: 1.2rem;
+  transition: color 0.3s;
+}
+
+.team-socials a:hover {
+  color: white;
+}
+
+/* --- ANIMATIONS (Reveal Classes) --- */
+.reveal-text { opacity: 0; transform: scale(0.95); transition: all 0.8s cubic-bezier(0.5,0,0,1); }
+.reveal-text.active { opacity: 1; transform: scale(1); }
+
+.reveal-image { opacity: 0; transform: translateX(50px); transition: all 1s cubic-bezier(0.5,0,0,1); }
+.reveal-image.active { opacity: 1; transform: translateX(0); }
+
+/* Left-side image reveal */
+.split-section .split-image-container.reveal-image { transform: translateX(-50px); }
+.split-section .split-image-container.reveal-image.active { transform: translateX(0); }
+/* Right-side image reveal */
+.split-section.reverse .split-image-container.reveal-image { transform: translateX(50px); }
+.split-section.reverse .split-image-container.reveal-image.active { transform: translateX(0); }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .split-section, .split-section.reverse { flex-direction: column; text-align: center; }
+  .split-image-container { width: 100%; height: 250px; }
+  .hero-title { font-size: 2.5rem; }
+}
+
+/* --- FOOTER (Same as Home) --- */
+.main-footer {
+  background-color: #050508;
+  border-top: 1px solid #222;
+  padding: 60px 20px;
+  position: relative;
+  z-index: 1;
+}
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+}
+.footer-col h4 { color: var(--accent-green); margin-bottom: 20px; }
+.footer-col a { display: block; color: #888; margin-bottom: 10px; transition: color 0.2s; }
+.footer-col a:hover { color: white; }
+.footer-bottom { text-align: center; margin-top: 50px; color: #444; font-size: 0.9rem; }

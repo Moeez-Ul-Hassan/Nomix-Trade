@@ -82,7 +82,13 @@
   font-weight: 600;
   transition: all 0.3s;
   white-space: nowrap;
-  text-decoration: none !important; /* Ensure no line on button either */
+  text-decoration: none !important;
+  
+  /* NEW PROPERTIES FOR BUTTON RESET */
+  background: transparent; /* Remove default gray bg */
+  cursor: pointer;         /* Add hand cursor */
+  font-family: inherit;    /* Match font */
+  font-size: 0.95rem;      /* Ensure size match */
 }
 
 .btn-signin:hover {

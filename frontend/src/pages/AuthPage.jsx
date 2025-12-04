@@ -11,6 +11,8 @@ const AuthPage = () => {
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+// In frontend/src/pages/AuthPage.jsx
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -23,9 +25,20 @@ const AuthPage = () => {
         const data = await response.json();
 
         if (response.ok) {
-            // --- NEW: SAVE THE LOGIN KEY ---
+            // --- DEBUGGING LOG (Check your browser console!) ---
+            console.log("LOGIN SUCCESS! Server sent:", data);
+
+            // 1. Save Name
             localStorage.setItem('user', data.user); 
-            // -------------------------------
+            
+            // 2. SAVE THE ID (CRITICAL FIX)
+            if (data.user_id) {
+              localStorage.setItem('user_id', data.user_id);
+            } else {
+              console.error("ERROR: Server did not send user_id!");
+              alert("Login Error: System did not receive User ID.");
+              return;
+            }
 
             alert("Login Successful! Welcome " + data.user);
             navigate('/dashboard'); 
@@ -33,6 +46,7 @@ const AuthPage = () => {
             alert("Login Failed: " + data.detail);
         }
     } catch (error) {
+        console.error("Login Error:", error);
         alert("Server error.");
     }
   };

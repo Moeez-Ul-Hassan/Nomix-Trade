@@ -14,8 +14,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# --- CORS CONFIGURATION (Updated for Safety) ---
-# We add both localhost and 127.0.0.1 to be sure
+# --- CORS CONFIGURATION ---
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -25,11 +24,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods (GET, POST, OPTIONS, etc.)
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- SECURITY (PASSWORD HASHING) ---
+# --- SECURITY ---
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 # --- DATABASE DEPENDENCY ---
@@ -40,7 +39,7 @@ def get_db():
     finally:
         db.close()
 
-# --- Pydantic Models ---
+# --- PYDANTIC MODELS ---
 class UserCreate(BaseModel):
     firstName: str
     lastName: str
@@ -52,25 +51,24 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+class FavoriteRequest(BaseModel):
+    user_id: int
+    stock_symbol: str
+
 # --- API ENDPOINTS ---
 
 @app.get("/")
 def read_root():
     return {"message": "Nomix Trade API is running"}
 
+# 1. USER AUTH
 @app.post("/signup")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    print(f"Signup Request Received for: {user.email}") # Debug print
-
-    # 1. Check if email already exists
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    # 2. Hash the password
     hashed_pw = pwd_context.hash(user.password)
-
-    # 3. Create new user object
     new_user = models.User(
         first_name=user.firstName,
         last_name=user.lastName,
@@ -78,23 +76,64 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         phone=user.phone,
         hashed_password=hashed_pw
     )
-
-    # 4. Save to Database
-    try:
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-        print("User saved successfully!")
-    except Exception as e:
-        print(f"Database Error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
     return {"message": "User created successfully", "user_id": new_user.id}
 
 @app.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
+    # 1. Find user by email
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    
+    # 2. Check password
     if not db_user or not pwd_context.verify(user.password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    return {"message": "Login successful", "user": db_user.first_name}
+    # 3. RETURN THE ID (This was likely missing or named differently)
+    return {
+        "message": "Login successful", 
+        "user": db_user.first_name, 
+        "user_id": db_user.id  # <--- CRITICAL LINE
+    }
+
+# 2. STOCK DATA (NEW)
+@app.get("/stocks")
+def get_all_stocks(db: Session = Depends(get_db)):
+    # Fetches all rows from the 'stocks' table you filled in phpMyAdmin
+    stocks = db.query(models.Stock).all()
+    return stocks
+
+# 1. ADD FAVORITE
+@app.post("/favorites/add")
+def add_favorite(fav: FavoriteRequest, db: Session = Depends(get_db)):
+    # Check if already exists
+    exists = db.query(models.UserFavorite).filter(
+        models.UserFavorite.user_id == fav.user_id,
+        models.UserFavorite.stock_symbol == fav.stock_symbol
+    ).first()
+    
+    if exists:
+        return {"message": "Already favorited"}
+
+    new_fav = models.UserFavorite(user_id=fav.user_id, stock_symbol=fav.stock_symbol)
+    db.add(new_fav)
+    db.commit()
+    return {"message": "Added to favorites"}
+
+# 2. REMOVE FAVORITE
+@app.post("/favorites/remove")
+def remove_favorite(fav: FavoriteRequest, db: Session = Depends(get_db)):
+    db.query(models.UserFavorite).filter(
+        models.UserFavorite.user_id == fav.user_id,
+        models.UserFavorite.stock_symbol == fav.stock_symbol
+    ).delete()
+    db.commit()
+    return {"message": "Removed from favorites"}
+
+# 3. GET USER FAVORITES
+@app.get("/favorites/{user_id}")
+def get_favorites(user_id: int, db: Session = Depends(get_db)):
+    # Get list of stock symbols for this user
+    favs = db.query(models.UserFavorite).filter(models.UserFavorite.user_id == user_id).all()
+    return [f.stock_symbol for f in favs]

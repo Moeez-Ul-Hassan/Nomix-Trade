@@ -1,67 +1,139 @@
-import React from 'react';
-import { FaBell, FaCog, FaHistory, FaUserFriends, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaBell, FaCog, FaHistory, FaArrowUp, FaArrowDown, FaTrash } from 'react-icons/fa';
 import './UserDashboard.css';
 
 const UserDashboard = () => {
+  const [allStocks, setAllStocks] = useState([]);
+  const [favorites, setFavorites] = useState([]); 
+  const [favStockData, setFavStockData] = useState([]);
+  
+  // Notification States
+  const [topGainers, setTopGainers] = useState([]);
+  const [topLosers, setTopLosers] = useState([]);
+
+  // --- GET USER INFO FROM LOCAL STORAGE ---
+  const userId = localStorage.getItem('user_id');
+  const userName = localStorage.getItem('user');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 1. Fetch All Stocks (For Notifications & Card Data)
+        const stocksRes = await fetch('http://127.0.0.1:8000/stocks');
+        const stocksData = await stocksRes.json();
+        setAllStocks(stocksData);
+
+        // 2. Calculate Notifications (Gainers/Losers)
+        const stocksWithChange = stocksData.map(s => ({
+            ...s,
+            changePercent: ((s.last - s.open) / s.open) * 100
+        }));
+
+        stocksWithChange.sort((a, b) => b.changePercent - a.changePercent);
+        
+        setTopGainers(stocksWithChange.slice(0, 3)); // Top 3
+        setTopLosers(stocksWithChange.slice(-2).reverse()); // Bottom 2
+
+        // 3. Fetch User Favorites (Only if logged in)
+        if (userId) {
+          const favRes = await fetch(`http://127.0.0.1:8000/favorites/${userId}`);
+          if (favRes.ok) {
+            const favSymbols = await favRes.json();
+            setFavorites(favSymbols);
+
+            // Filter full stock data for just the favorites
+            const userFavStocks = stocksData.filter(s => favSymbols.includes(s.symbol));
+            setFavStockData(userFavStocks);
+          }
+        }
+
+      } catch (error) {
+        console.error("Dashboard Fetch Error:", error);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
+  // Handle Remove Favorite
+  const removeStock = async (symbol) => {
+    // Optimistic UI Update
+    setFavStockData(favStockData.filter(s => s.symbol !== symbol));
+    
+    try {
+      await fetch('http://127.0.0.1:8000/favorites/remove', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ user_id: userId, stock_symbol: symbol })
+      });
+    } catch (err) {
+      alert("Failed to update database");
+    }
+  };
+
   return (
     <div className="dashboard-container">
-      <h1 className="page-title">Profile</h1>
+      {/* DYNAMIC WELCOME MESSAGE */}
+      <h1 className="page-title">Welcome, {userName || "Trader"}</h1>
 
       <div className="dashboard-layout">
         
-        {/* --- Left Side: Charts --- */}
+        {/* --- Left Side: Main Content --- */}
         <div className="main-content">
           <h3 className="section-header">My Liked PSX Companies</h3>
           
-          <div className="cards-row">
-            {/* Card 1 */}
-            <div className="stock-card">
-              <div className="card-header">
-                <h4>Engro Corp</h4>
-                <button className="btn-select">Selected</button>
-              </div>
-              {/* Simple CSS Chart Visual */}
-              <div className="mini-chart">
-                <svg width="100%" height="100%" viewBox="0 0 100 50">
-                   <polyline points="0,40 20,35 40,20 60,30 80,10 100,5" fill="none" stroke="#4CAF50" strokeWidth="2" />
-                </svg>
-              </div>
-              <div style={{marginTop:'10px', fontSize:'0.8rem', color:'#666'}}>1D 1W 1M <span style={{color:'white'}}>Month</span></div>
-            </div>
+          {favStockData.length === 0 ? (
+             <div className="empty-state">
+                <p>No favorites yet. Go to <a href="/market" style={{color:'#4CAF50'}}>Forecast</a> to add some!</p>
+             </div>
+          ) : (
+            <div className="cards-grid-dashboard">
+              {favStockData.map((stock) => (
+                <div className="stock-card" key={stock.symbol}>
+                  <div className="card-header">
+                    <h4>{stock.name}</h4>
+                    <button className="btn-deselect" onClick={() => removeStock(stock.symbol)}>
+                        <FaTrash /> 
+                    </button>
+                  </div>
+                  
+                  {/* Stock Data */}
+                  <div className="stock-info">
+                    <div className="price-box">
+                        <span className="label">Current</span>
+                        <span className="value">Rs {stock.last}</span>
+                    </div>
+                    <div className="price-box">
+                        <span className="label">Prediction (1D)</span>
+                        <span className="value" style={{color: '#FFD700'}}>Rs {stock.pred1}</span>
+                    </div>
+                  </div>
 
-            {/* Card 2 */}
-            <div className="stock-card">
-              <div className="card-header">
-                <h4>Lucky Cement</h4>
-                <button className="btn-select">Selected</button>
-              </div>
-              <div className="mini-chart">
-                 <svg width="100%" height="100%" viewBox="0 0 100 50">
-                   <polyline points="0,30 30,30 50,40 70,15 100,20" fill="none" stroke="#2196F3" strokeWidth="2" />
-                </svg>
-              </div>
-              <div style={{marginTop:'10px', fontSize:'0.8rem', color:'#666'}}>1D 1W 1M <span style={{color:'white'}}>Month</span></div>
+                  {/* Mini Graph Visual */}
+                  <div className="mini-chart-container">
+                    <svg width="100%" height="40" viewBox="0 0 100 40">
+                       <polyline 
+                          points="0,35 30,30 60,15 100,5" 
+                          fill="none" 
+                          stroke={stock.pred1 > stock.last ? "#4CAF50" : "#F44336"} 
+                          strokeWidth="3" 
+                       />
+                    </svg>
+                  </div>
+                  <div style={{marginTop:'10px', fontSize:'0.8rem', color:'#666'}}>
+                      Trend: <span style={{color: stock.pred1 > stock.last ? "#4CAF50" : "#F44336", fontWeight:'bold'}}>
+                          {stock.pred1 > stock.last ? "Bullish" : "Bearish"}
+                      </span>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
 
-            {/* Card 3 */}
-            <div className="stock-card">
-              <div className="card-header">
-                <h4>MCB Bank</h4>
-                <button className="btn-deselect">Deselect</button>
-              </div>
-               <div className="mini-chart">
-                 <svg width="100%" height="100%" viewBox="0 0 100 50">
-                   <polyline points="0,25 25,25 50,10 75,30 100,15" fill="none" stroke="#FF9800" strokeWidth="2" />
-                </svg>
-              </div>
-              <div style={{marginTop:'10px', fontSize:'0.8rem', color:'#666'}}>1D 1W 1M <span style={{color:'white'}}>Month</span></div>
-            </div>
-          </div>
-
-          <h3 className="section-header">My Liked PSX Companies</h3>
+          <h3 className="section-header" style={{marginTop:'40px'}}>Quick Actions</h3>
           <div className="search-bar-container">
-            <input type="text" placeholder="Discover Companies" className="search-input" />
-            <button className="add-btn">Add New</button>
+            <input type="text" placeholder="Search Markets..." className="search-input" />
+            <button className="add-btn">Search</button>
           </div>
         </div>
 
@@ -78,35 +150,36 @@ const UserDashboard = () => {
             <div className="menu-item"><FaHistory /> Trade History</div>
           </div>
 
-          {/* Notifications */}
+          {/* AI Generated Notifications */}
           <div className="sidebar-card">
             <div className="sidebar-header">
-              <span>Notifications</span>
+              <span>Market Movers</span>
             </div>
-            <div style={{marginBottom:'15px', color:'#2196F3', fontSize:'0.9rem'}}>3 New Alerts</div>
+            <div style={{marginBottom:'15px', color:'#2196F3', fontSize:'0.9rem'}}>Top AI Insights</div>
 
-            <div className="notification-item">
-               <div className="notif-icon"><FaUserFriends /></div>
-               <div className="notif-text">
-                  <strong>Refer a Friend</strong>
-                  <div className="time">1 day ago</div>
-               </div>
-            </div>
+            {/* TOP 3 GAINERS */}
+            {topGainers.map((stock) => (
+                <div className="notification-item" key={stock.symbol}>
+                    <div className="notif-icon"><FaArrowUp /></div>
+                    <div className="notif-text">
+                        <strong>{stock.symbol}: UP {stock.changePercent.toFixed(2)}%</strong>
+                        <div className="time">Top Gainer Today</div>
+                    </div>
+                </div>
+            ))}
 
-            <div className="notification-item">
-               <div className="notif-icon"><FaArrowDown style={{color:'red'}}/></div>
-               <div className="notif-text">
-                  <strong>Engro Corp: UP 3.5% today!</strong>
-                  <span style={{color:'red'}}>Down 1.2%</span> - Market Open
-               </div>
-            </div>
+            <hr style={{borderColor:'rgba(255,255,255,0.1)', margin:'10px 0'}}/>
 
-             <div className="notification-item">
-               <div className="notif-icon"><FaArrowUp /></div>
-               <div className="notif-text">
-                  <strong>Engro Corp: Added to Watchlist</strong>
-               </div>
-            </div>
+            {/* TOP 2 LOSERS */}
+            {topLosers.map((stock) => (
+                <div className="notification-item" key={stock.symbol}>
+                    <div className="notif-icon"><FaArrowDown style={{color:'red'}}/></div>
+                    <div className="notif-text">
+                        <strong>{stock.symbol}: DOWN {Math.abs(stock.changePercent).toFixed(2)}%</strong>
+                        <div className="time">Major Drop</div>
+                    </div>
+                </div>
+            ))}
 
           </div>
         </div>
