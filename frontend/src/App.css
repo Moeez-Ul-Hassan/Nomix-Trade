@@ -1,23 +1,41 @@
-/* Global Reset */
+/* src/App.css */
+
+/* 1. FORCE THE DARK BACKGROUND EVERYWHERE */
 :root {
-  --primary-bg: #1a1a1a;
+  --bg-dark: #050816;
+  --bg-card: #0f1221;
   --accent-green: #4CAF50;
+  --accent-blue: #2196F3;
+  --text-gold: #FFD700;
 }
 
+/* 2. STRICT RESET */
 * {
-  box-sizing: border-box;
+  box-sizing: border-box; /* This is crucial */
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-body {
+/* 3. LOCK DOWN THE ROOT ELEMENTS */
+html, body {
   width: 100%;
-  height: 100vh;
-  overflow-x: hidden;
-  background-color: #f4f4f4;
+  max-width: 100%;
+  overflow-x: hidden !important; /* Force hide horizontal scroll */
+  background-color: var(--bg-dark); /* Ensure background is dark, not white */
+  color: white;
+  min-height: 100vh;
 }
 
+/* 4. LOCK THE REACT APP WRAPPER */
+#root {
+  width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Global Styles */
 a {
   text-decoration: none;
   color: inherit;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import Navbar from "./components/Navbar";
 
 // Import Pages
 import LandingPage from './pages/LandingPage';
@@ -25,23 +26,9 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      {/* --- YOUR NAVBAR (UNCHANGED) --- */}
-      <nav style={{ padding: '15px 40px', background: '#1a1a1a', color: '#fff', display: 'flex', alignItems: 'center' }}>
-        <h3 style={{margin:0, fontFamily: 'Courier New', fontSize: '1.5rem', marginRight: '40px'}}>NOMIX</h3>
-        
-        <div style={{ display: 'flex', gap: '20px' }}>
-            <Link to="/" style={{ color: '#ccc', fontSize: '0.9rem' }}>Home</Link>
-            <Link to="/market" style={{ color: '#ccc', fontSize: '0.9rem' }}>Forecast</Link>
-            <Link to="/research" style={{ color: '#ccc', fontSize: '0.9rem' }}>Research</Link>
-            <Link to="/dashboard" style={{ color: '#ccc', fontSize: '0.9rem' }}>Dashboard</Link>
-        </div>
-        
-        <div style={{marginLeft: 'auto', display: 'flex', gap: '15px'}}>
-            <Link to="/login" style={{ color: 'white', fontWeight: 'bold' }}>Login</Link>
-            <Link to="/signup" style={{ color: '#4CAF50', fontWeight: 'bold' }}>Sign Up</Link>
-        </div>
-      </nav>
+<Router>
+      {/* --- NEW NAVBAR (Replaces the old <nav> code) --- */}
+      <Navbar />
 
       {/* --- ROUTES --- */}
       <Routes>

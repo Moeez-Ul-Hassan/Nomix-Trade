@@ -1,0 +1,142 @@
+/* src/components/Navbar.css */
+
+/* --- NAVBAR CONTAINER --- */
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px; 
+  height: 80px;
+  
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  
+  /* Dark Background & Border */
+  background-color: #0b0c15; 
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+/* --- LOGO SECTION --- */
+.navbar-logo-section .logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  
+  /* FORCE REMOVE UNDERLINE */
+  text-decoration: none !important; 
+  border-bottom: none !important;
+}
+
+.nav-logo-img {
+  height: 70px;
+  width: auto;
+}
+
+.brand-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  
+  /* Extra safety to prevent underlining */
+  text-decoration: none !important; 
+}
+
+/* --- DESKTOP MENU --- */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+}
+
+.nav-item {
+  color: #b0b0b0;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s;
+  
+  /* FORCE REMOVE UNDERLINE */
+  text-decoration: none !important;
+}
+
+/* Hover: Just change color, no line */
+.nav-item:hover, .nav-item.active-link {
+  color: white;
+  text-decoration: none !important;
+}
+
+/* --- REMOVED THE ::after BLOCK HERE TO STOP THE GOLDEN LINE --- */
+
+
+/* --- SIGN IN BUTTON --- */
+.btn-signin {
+  color: #FFD700;
+  border: 1px solid #FFD700;
+  padding: 8px 20px;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s;
+  white-space: nowrap;
+  text-decoration: none !important; /* Ensure no line on button either */
+}
+
+.btn-signin:hover {
+  background-color: #FFD700;
+  color: black;
+}
+
+/* --- MOBILE HAMBURGER --- */
+.menu-icon {
+  display: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+/* --- RESPONSIVE FIX --- */
+@media screen and (max-width: 960px) {
+  .navbar-container {
+    padding: 0 20px;
+  }
+  
+  .menu-icon {
+    display: block;
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 80px;
+    left: -100%;
+    width: 100%;
+    height: 100vh;
+    background-color: #0b0c15;
+    transition: all 0.5s ease;
+    padding-top: 40px;
+    border-top: 1px solid #333;
+  }
+
+  .nav-menu.active {
+    left: 0;
+  }
+  
+  .nav-item {
+    text-align: center;
+    padding: 20px;
+    display: block;
+    width: 100%;
+  }
+  
+  .mobile-auth-btn-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+  }
+}

@@ -1,13 +1,15 @@
 /* Dark Theme Dashboard */
 .dashboard-container {
-  background-color: #0d0e12; /* Deep dark background */
+  background-color: var(--bg-dark); 
   color: white;
   min-height: 100vh;
   padding: 40px;
   font-family: 'Segoe UI', sans-serif;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px; /* Creates the grid effect */
+  
+  /* The grid lines will now blend perfectly with the blue background */
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+  linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
 .page-title {
@@ -43,7 +45,8 @@
 }
 
 .stock-card {
-  background-color: #16171d;
+  background-color: var(--bg-card); /* Uses the slightly lighter blue */
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 20px;
   flex: 1;
@@ -89,10 +92,10 @@
 .search-bar-container {
   display: flex;
   gap: 10px;
-  background: #16171d;
+  background-color: var(--bg-card); /* Uses the slightly lighter blue */
+  border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 15px;
   border-radius: 12px;
-  border: 1px solid #2a2a2a;
 }
 
 .search-input {
@@ -122,10 +125,11 @@
 }
 
 .sidebar-card {
-  background-color: #16171d;
+  background-color: var(--bg-card); /* Uses the slightly lighter blue */
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid #2a2a2a;
+
 }
 
 .sidebar-header {
@@ -172,3 +176,4 @@
   color: #666;
   font-size: 0.8rem;
 }
+
