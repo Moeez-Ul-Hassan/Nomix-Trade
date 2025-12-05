@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float,ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Date
+from sqlalchemy.orm import relationship
 from database import Base
 
 # --- EXISTING USER MODEL ---
@@ -12,13 +13,15 @@ class User(Base):
     phone = Column(String(20))
     hashed_password = Column(String(255))
 
-# --- NEW STOCK MODEL ---
+# --- UPDATED STOCK MODEL WITH DATE ---
 class Stock(Base):
     __tablename__ = 'stocks'
 
     id = Column(Integer, primary_key=True, index=True)
-    symbol = Column(String(20), unique=True, index=True)
+    symbol = Column(String(20), index=True) # Removed unique=True
     name = Column(String(100))
+    
+    date = Column(Date, index=True) # <--- NEW COLUMN
     
     # OHLC Data
     last = Column(Float)
@@ -27,13 +30,30 @@ class Stock(Base):
     low = Column(Float)
     
     # Predictions
-    pred1 = Column(Float)  # Next Day
-    pred7 = Column(Float)  # 7 Days
-    pred30 = Column(Float) # 30 Days
+    pred1 = Column(Float)
+    pred7 = Column(Float)
+    pred30 = Column(Float)
 
+# --- USER FAVORITES (No Change) ---
+from sqlalchemy import ForeignKey
 class UserFavorite(Base):
     __tablename__ = 'user_favorites'
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     stock_symbol = Column(String(20), ForeignKey('stocks.symbol'))
+
+
+# --- NEW: KSE INDEX MODEL ---
+class KSEIndex(Base):
+    __tablename__ = 'kse_index'
+
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, index=True)
+    
+    current = Column(Float) # Current Index Points
+    open = Column(Float)
+    high = Column(Float)
+    low = Column(Float)
+    
+    pred_close = Column(Float) # Prediction for next close
