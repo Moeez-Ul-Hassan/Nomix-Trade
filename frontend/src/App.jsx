@@ -6,37 +6,31 @@ import Navbar from "./components/Navbar";
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ForecastMain from './pages/ForecastMain';
-import CompanyDetails from './pages/CompanyDetails';
+import CompanyPage from './pages/CompanyPage'; // <--- NEW IMPORT
 import Research from './pages/Research';
 import UserDashboard from './pages/UserDashboard';
 import Signup from './components/signup';
 
-// --- NEW SECURITY COMPONENT ---
-// This acts as a Guard. If no user key, kick them to Login.
+// Guard Component
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('user'); // Check for key
-  
+  const isAuthenticated = localStorage.getItem('user'); 
   if (!isAuthenticated) {
     alert("You have to sign in or up first!");
     return <Navigate to="/login" replace />;
   }
-  
   return children;
 };
 
 function App() {
   return (
-<Router>
-      {/* --- NEW NAVBAR (Replaces the old <nav> code) --- */}
+    <Router>
       <Navbar />
-
-      {/* --- ROUTES --- */}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<AuthPage />} />
         
-        {/* Protected Routes */}
+        {/* Protected Dashboard */}
         <Route 
           path="/dashboard" 
           element={
@@ -47,7 +41,10 @@ function App() {
         />
         
         <Route path="/market" element={<ForecastMain />} />
-        <Route path="/company/:id" element={<CompanyDetails />} />
+        
+        {/* --- NEW ROUTE FOR COMPANY DETAILS --- */}
+        <Route path="/company/:symbol" element={<CompanyPage />} />
+        
         <Route path="/research" element={<Research />} />
       </Routes>
     </Router>

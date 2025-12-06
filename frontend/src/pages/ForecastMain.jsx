@@ -46,7 +46,6 @@ const ForecastMain = () => {
         }
 
         // B. Fetch KSE-30 Index Data
-        // Matches the /index_data endpoint in your main.py
         try {
           const indexResponse = await fetch(`http://127.0.0.1:8000/index_data?target_date=${selectedDate}`);
           if (indexResponse.ok) {
@@ -111,12 +110,11 @@ const ForecastMain = () => {
     }
   };
 
+  // Helper to get prediction (Updated for new DB Schema)
   const getPrediction = (stock) => {
-    switch (predictionPeriod) {
-      case '7 Days': return stock.pred7;
-      case '30 Days': return stock.pred30;
-      case '1 Day': default: return stock.pred1;
-    }
+    // Currently the DB only has one 'pred_close' column. 
+    // You can expand the logic here later if you add more columns (pred7, pred30).
+    return stock.pred_close;
   };
 
   return (
@@ -224,8 +222,8 @@ const ForecastMain = () => {
                     <th>Open</th>
                     <th>High</th>
                     <th>Low</th>
-                    <th>Pred Close ({predictionPeriod})</th>
-                    <th>Add Favourite</th>
+                    <th>Pred Close</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -237,7 +235,10 @@ const ForecastMain = () => {
                     return (
                       <tr key={stock.id}>
                         <td className="stock-symbol">
-                          {stock.symbol}
+                          {/* UPDATED LINK TO COMPANY PAGE */}
+                          <Link to={`/company/${stock.symbol}`} className="stock-link">
+                            {stock.symbol}
+                          </Link>
                           <span className="company-name-sub">{stock.name}</span>
                         </td>
                         <td>{stock.last.toFixed(2)}</td>
@@ -245,7 +246,7 @@ const ForecastMain = () => {
                         <td>{stock.high.toFixed(2)}</td>
                         <td>{stock.low.toFixed(2)}</td>
                         
-                        {/* --- PREDICTION CELL (Fixed Alignment) --- */}
+                        {/* --- PREDICTION CELL --- */}
                         <td style={{ color: isBullish ? '#4CAF50' : '#ff4d4d' }}>
                           <div className="pred-cell-wrapper">
                             {prediction.toFixed(2)}

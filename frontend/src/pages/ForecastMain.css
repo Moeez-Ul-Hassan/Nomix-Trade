@@ -452,3 +452,23 @@
   font-weight: 700;
   height: 100%;
 }
+
+/* ... Keep all your previous CSS ... */
+
+/* ADD THIS for the Link */
+.stock-link {
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+
+.stock-link:hover {
+  color: var(--accent-gold);
+  text-decoration: underline;
+}
+
+/* Ensure table rows look interactive */
+.stock-table tr:hover td {
+  background-color: rgba(255, 255, 255, 0.02);
+}
